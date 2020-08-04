@@ -1,24 +1,33 @@
-package r.afpa.exercices.spring;
+package r.afpa.exercices.spring.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import lombok.extern.log4j.Log4j;
+import r.afpa.exercices.model.Book;
+
+@Log4j
 @Repository
-public class CommentsDao {
+public class BooksDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	public List<Comments> getAllComments() {
-		String query = "Select * from Comments ";
-		return jdbcTemplate.query(query, new CommentsMapper());
+	public List<Book> getAllBooks() {
+		String query = "Select * from books ";
+		return jdbcTemplate.query(query, new BooksMapper());
 	}
 
-	private static final class CommentsMapper implements RowMapper<Comments> {
-		public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Author auteur = new Author();
-			auteur.setName(rs.getString("name"));
-			auteur.setId(rs.getInt("id"));
-			return auteur;
-		}
-		
+	private static final class BooksMapper implements RowMapper<Book> {
+		@Override
 		public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Book livre = new Book();
 			livre.setAuthorId(rs.getInt("authorid"));
@@ -28,36 +37,32 @@ public class CommentsDao {
 		}
 	}
 
-	/**
-	 * nombre commentairs
-	 * 
-	 * @return
-	 */
-	public int getNbId() {
+	public int getNbBooks() {
 		String query = "Select count(*) from books ";
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
-	public void setBooks(String user, String email, String url, String date, String summary, String Comments) {
-		String query = "INSERT INTO books (authorid, id, title) values (?, ?, ?)";
-		jdbcTemplate.update(query, user, email, url, date, summary, Comments);
+	public int setBooks(String title) {
+		
+		try {
+			String query = "INSERT INTO BOOKS ( title) VALUES (?)";
+			return jdbcTemplate.update(query, title);
+		} catch (DuplicateKeyException e) {
+			log.error(e);
+			return 0;
+		}
 
 	}
 	
-	public void deleCommentById(int id) {
-		 String query= "delete from books where id = ?";
-		 jdbcTemplate.update(query, id);
+	public int deleteBookByAuthor(String name) {
+		 String query= "DELETE FROM AUTHOR WHERE NAME = ?";
+		 return jdbcTemplate.update(query, name);
 	}
 	
-	public void deleCommentByEmail(String email) {
-		 String query= "delete from books where email = ?";
-		 jdbcTemplate.update(query, email);
-	}
 	
-	public void deleCommentByUserId(String myuser) {
-		 String query= "delete from books where myuser = ?";
-		 jdbcTemplate.update(query, myuser);
+	public String deleteBookByTitle(String title) {
+		 String query= "DELETE FROM BOOKS WHERE TITLE = ?";
+		 jdbcTemplate.update(query, title);
+		 return title;
 	}
-
-
 }

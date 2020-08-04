@@ -15,7 +15,7 @@ public class AppConfiguration {
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUsername("testuser");
         dataSource.setPassword("RjqpoN5oLmiD7nEJ");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/feedback?useSSL=false&serverTimezone=UTC");
+        dataSource.setUrl("jdbc:mysql://localhost:3308/feedback?useSSL=false&serverTimezone=UTC");
         return dataSource;
     }
 

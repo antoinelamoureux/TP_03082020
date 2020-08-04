@@ -1,52 +1,50 @@
-package r.afpa.exercices.spring;
+package r.afpa.exercices.spring.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
+import r.afpa.exercices.model.Author;
 
+@Repository
 public class AuthorDao {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	public List<Comments> getAllComments() {
-		String query = "Select * from Comments ";
-		return jdbcTemplate.query(query, new CommentsMapper());
-	}
-
-	private static final class CommentsMapper implements RowMapper<Comments> {
+	private static final class AuthorMapper implements RowMapper<Author> {
+		@Override
 		public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Author auteur = new Author();
-			auteur.setName(rs.getString("name"));
 			auteur.setId(rs.getInt("id"));
+			auteur.setName(rs.getString("name"));
 			return auteur;
 		}
 	}
-
-	/**
-	 * nombre commentairs
-	 * 
-	 * @return
-	 */
-	public int getNbId() {
-		String query = "Select count(*) from authors";
-		return jdbcTemplate.queryForObject(query, Integer.class);
+	
+	public List<Author> getAllAuthors() {
+		String query = "SELECT * FROM AUTHORS ";
+		return jdbcTemplate.query(query, new AuthorMapper());
 	}
 
-	public void setBooks(String name, int id) {
-		String query = "INSERT INTO authors (name, id) values (?, ?)";
-		jdbcTemplate.update(query, user, email, url, date, summary, Comments);
-
+	public int setAuthor(String name) {
+		String query = "INSERT INTO AUTHORS (name) VALUES(?)";
+		return jdbcTemplate.update(query, name);
 	}
 	
-	public void deleteAuthorById(int id) {
-		 String query= "delete from authors where id = ?";
-		 jdbcTemplate.update(query, id);
+	public int getAuthor(String name) {
+		String query = "SELECT * FROM AUTHORS WHERE NAME = ?";
+		return jdbcTemplate.update(query, name);
 	}
 	
-	public void deleteAuthorByName(String name) {
-		 String query= "delete from authors where name = ?";
-		 jdbcTemplate.update(query, email);
+	
+	public int deleteByAuthor(String name) {
+		 String query= "DELETE BOOKS, AUTHORS FROM BOOKS INNER JOIN AUTHORS ON AUTHORS.ID = BOOKS.AUTHORID WHERE AUTHORS.NAME = ?";
+		 return jdbcTemplate.update(query, name);
 	}
 	
-
 }

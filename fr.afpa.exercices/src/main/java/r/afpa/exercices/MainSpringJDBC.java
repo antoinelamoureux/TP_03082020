@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import lombok.extern.log4j.Log4j;
+import r.afpa.exercices.spring.dao.BooksDao;
+import r.afpa.exercices.model.Book;
 import r.afpa.exercices.spring.dao.AuthorDao;
 import r.afpa.exercices.spring.config.AppConfiguration;
 
@@ -17,27 +19,32 @@ public class MainSpringJDBC {
 		// the configuration of the 'AppConfiguration' class.
 		ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		
-		//CustomerDao customer= (CustomerDao) ctx.getBean("customerDao");
-		//customer.createTable();
-		
-		log.info("list des commentaires");
+		BooksDao booksDao = (BooksDao) ctx.getBean("booksDao");
 		AuthorDao authorDao = (AuthorDao) ctx.getBean("authorDao");
 		
-		List<AuthorDao> authors = authorDao.getAllComments();
-		for (AuthorDao author : authors) {
-			System.out.println(author);
+		log.info("Nombres de livres: ");
+		System.out.println(booksDao.getNbBooks());
+		
+		log.info("Liste des livres: ");
+		List<Book> books = booksDao.getAllBooks();
+		for (Book book : books) {
+			System.out.println(book);
 		}
 		
-		log.info("nombres des commentaires");
-		System.out.println(cmntsDao.getNbComments());
+		log.info("Auteur ajouté: ");
+		System.out.println(authorDao.setAuthor("Sabri Louatah"));
 		
-		log.info("insert livres");
-		AuthorDao.setBooks();
-		AuthorDao.setBooks("mimi", "mimi@yahoo.fr", "http://www.mimi.com", "2009-09-14 10:33:11", "timi Summary", "mimi first comment");
+		log.info("Livres ajoutés: ");
+		System.out.println(booksDao.setBooks("Les Sauvages Tome 1"));
+		System.out.println(booksDao.setBooks("Les Sauvages Tome 2"));
+		System.out.println(booksDao.setBooks("Les Sauvages Tome 3"));
+		System.out.println(booksDao.setBooks("Les Sauvages Tome 4"));
 		
+		log.info("Livres supprimés: ");
+		System.out.println(booksDao.deleteBookByTitle("Les Sauvages Tome 1"));
+		System.out.println(booksDao.deleteBookByTitle("Les Sauvages Tome 4"));
 		
-		log.info("delet commentaires");
-		AuthorDao.deleCommentById(19);
-		AuthorDao.deleCommentByName("picsou");
+		log.info("Livres supprimés: ");
+		System.out.println(authorDao.deleteByAuthor("Honore de Balzac"));
 	}
 }
