@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import lombok.extern.log4j.Log4j;
 import r.afpa.exercices.spring.dao.BooksDao;
@@ -22,12 +24,18 @@ public class MainSpringJDBC {
 		BooksDao booksDao = (BooksDao) ctx.getBean("booksDao");
 		AuthorDao authorDao = (AuthorDao) ctx.getBean("authorDao");
 		
-		log.info("Nombres de livres: ");
-		System.out.println(booksDao.getNbBooks());
-		
 		log.info("Liste des livres: ");
 		List<Book> books = booksDao.getAllBooks();
 		for (Book book : books) {
+			System.out.println(book);
+		}
+		
+		log.info("Nombres de livres: ");
+		System.out.println(booksDao.getNbBooks());
+		
+		log.info("Livres selectionnés: ");
+		List<Book> authorBooks = booksDao.getBooksByAuthor("Truman Capote");
+		for (Book book : authorBooks) {
 			System.out.println(book);
 		}
 		
@@ -46,5 +54,7 @@ public class MainSpringJDBC {
 		
 		log.info("Livres supprimés: ");
 		System.out.println(authorDao.deleteByAuthor("Honore de Balzac"));
+		
+		((AbstractApplicationContext) ctx).close();
 	}
 }

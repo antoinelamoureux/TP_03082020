@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +25,7 @@ public class BooksDao {
 		return jdbcTemplate.query(query, new BooksMapper());
 	}
 
-	private static final class BooksMapper implements RowMapper<Book> {
+	public static final class BooksMapper implements RowMapper<Book> {
 		@Override
 		public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Book livre = new Book();
@@ -35,11 +34,6 @@ public class BooksDao {
 			livre.setTitle(rs.getString("title"));
 			return livre;
 		}
-	}
-
-	public int getNbBooks() {
-		String query = "Select count(*) from books ";
-		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
 	public int setBooks(String title) {
@@ -54,6 +48,11 @@ public class BooksDao {
 
 	}
 	
+	public int getNbBooks() {
+		String query = "Select count(*) from books ";
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+	
 	public int deleteBookByAuthor(String name) {
 		 String query= "DELETE FROM AUTHOR WHERE NAME = ?";
 		 return jdbcTemplate.update(query, name);
@@ -64,5 +63,10 @@ public class BooksDao {
 		 String query= "DELETE FROM BOOKS WHERE TITLE = ?";
 		 jdbcTemplate.update(query, title);
 		 return title;
+	}
+	
+	public List<Book> getBooksByAuthor(String name) {
+		String query= "SELECT * FROM BOOKS INNER JOIN AUTHORS ON AUTHORS.ID = BOOKS.AUTHORID WHERE AUTHORS.NAME = ?";
+		return jdbcTemplate.query(query, new Object[]{name}, new BooksMapper());
 	}
 }
